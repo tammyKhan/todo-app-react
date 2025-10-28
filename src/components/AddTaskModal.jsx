@@ -4,7 +4,7 @@ import TaskList from "./TaskList";
 
 const AddTaskModal = () => {
   const [showModal, setShowModal] = useState(false);
- const [task, setTask] = useState({
+  const [task, setTask] = useState({
     title: "",
     priority: "High",
     dueDate: "",
@@ -14,13 +14,15 @@ const AddTaskModal = () => {
   useEffect(() => {
     const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
     setTasks(savedTasks);
-  } ,[])
+  }, []);
 
+  // handle input change
   const handleChange = (e) => {
     const { id, value } = e.target;
     setTask((prev) => ({ ...prev, [id]: value }));
   };
 
+  // handle task Submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -31,10 +33,10 @@ const AddTaskModal = () => {
 
     const isDuplicate = tasks.some(
       (t) => t.title.trim().toLowerCase() === task.title.trim().toLowerCase()
-    )
+    );
 
-    if(isDuplicate) {
-      alert("This Title already exists!")
+    if (isDuplicate) {
+      alert("This Title already exists!");
       return;
     }
 
@@ -42,16 +44,25 @@ const AddTaskModal = () => {
       id: crypto.randomUUID(),
       title: task.title,
       priority: task.priority,
-      dueDate: task.dueDate
-    }
+      dueDate: task.dueDate,
+      createdAt: new Date().toISOString(),
+    };
 
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    alert("Task Saved Successfully")
+    alert("Task Saved Successfully");
 
-    setShowModal(false)
+    setShowModal(false);
     setTask({ title: "", priority: "High", dueDate: "" });
+  };
+
+  // delete functionality
+  const handleDelete = (id) => {
+    console.log(id);
+    const updatedTasks = tasks.filter((t) => t.id !== id);
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   };
 
   return (
@@ -136,16 +147,17 @@ const AddTaskModal = () => {
       )}
 
       {/* Task List */}
-      <div className="mt-12 space-y-3">
-         {
-          tasks.length === 0 ? (
-         <p className="text-center">No Tasks Yet</p>
-          ) : (
-         tasks.map((t) => (
-          <TaskList key={t.id} task={t} />
-         ))
-          )
-         }
+      <div className="mt-8 space-y-3">
+        {tasks.length === 0 ? (
+          <p className="text-center">No Tasks Yet</p>
+        ) : (
+          tasks.map((t) => 
+          <TaskList
+           key={t.id} 
+           task={t} 
+           handleDelete={handleDelete}
+           />)
+        )}
       </div>
     </>
   );
