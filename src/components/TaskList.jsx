@@ -2,7 +2,7 @@ import React from 'react';
 import { BiSolidEdit } from 'react-icons/bi';
 import { FaTrash } from 'react-icons/fa6';
 
-const TaskList = ({task, handleDelete}) => {
+const TaskList = ({task, handleDelete, handleEdit}) => {
   return (
           <div className="flex bg-[#1F0356] p-3 rounded-3xl">
          
@@ -20,7 +20,7 @@ const TaskList = ({task, handleDelete}) => {
               </div>
               
               <div className="flex flex-col md:flex-row gap-2 md:gap-5 items-center justify-end mx-4 md:mx-8">
-            <BiSolidEdit className="text-[#BFAF1C] text-2xl cursor-pointer hover:text-opacity-65 edit-icon" />
+            <BiSolidEdit onClick={() => handleEdit(task.id)} className="text-[#BFAF1C] text-2xl cursor-pointer hover:text-opacity-65 edit-icon" />
             <FaTrash onClick={() => handleDelete(task.id)} className="text-[#FF5730] text-xl cursor-pointer hover:text-opacity-65 delete-icon" />
           </div>
               </div>

@@ -9,12 +9,11 @@ const AddTaskModal = () => {
     priority: "High",
     dueDate: "",
   });
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    setTasks(savedTasks);
-  }, []);
+  const [tasks, setTasks] = useState(() => {
+    return JSON.parse(localStorage.getItem("tasks")) || [];
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTaskId, setEditTaskId] = useState(null);
 
   // handle input change
   const handleChange = (e) => {
@@ -32,14 +31,24 @@ const AddTaskModal = () => {
     }
 
     const isDuplicate = tasks.some(
-      (t) => t.title.trim().toLowerCase() === task.title.trim().toLowerCase()
+      (t) => t.title.trim().toLowerCase() === task.title.trim().toLowerCase() &&
+      t.id !== editTaskId
     );
 
     if (isDuplicate) {
-      alert("This Title already exists!");
+      alert("A task with this title already exists!");
       return;
     }
 
+    if(isEditing) {
+      // edit mode
+      const updatedTasks = tasks.map((t) => 
+        t.id === editTaskId ? {...t, ...task, title: task.title.trim()} : t );
+      setTasks(updatedTasks);
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+      alert("Task updated successfully!");
+    } else {
+      // create mode
     const newTask = {
       id: crypto.randomUUID(),
       title: task.title,
@@ -52,9 +61,13 @@ const AddTaskModal = () => {
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
     alert("Task Saved Successfully");
+    }
 
+    // reset
     setShowModal(false);
     setTask({ title: "", priority: "High", dueDate: "" });
+    setIsEditing(false);
+    setEditTaskId(null);
   };
 
   // delete functionality
@@ -64,6 +77,17 @@ const AddTaskModal = () => {
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   };
+
+  // edit functionality
+  const handleEdit = (id) => {
+    const taskToEdit = tasks.find((t) => t.id === id);
+    if(taskToEdit) {
+      setTask(taskToEdit);
+      setIsEditing(true);
+      setEditTaskId(id);
+      setShowModal(true);
+    }
+  }
 
   return (
     <>
@@ -139,7 +163,7 @@ const AddTaskModal = () => {
                 type="submit"
                 className="px-4 py-1 font-semibold text-white bg-[#EB03FF] border-2 border-[#EB03FF] rounded-3xl hover:text-opacity-65"
               >
-                Save
+                {isEditing ? "Update" : "Save" }
               </button>
             </div>
           </form>
@@ -156,6 +180,7 @@ const AddTaskModal = () => {
            key={t.id} 
            task={t} 
            handleDelete={handleDelete}
+           handleEdit={handleEdit}
            />)
         )}
       </div>
