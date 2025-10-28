@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from './components/Header';
 import FilterBar from './components/FilterBar';
+import AddTaskModal from './components/AddTaskModal';
 
 const App = () => {
   const taskCounts = {
@@ -14,6 +15,7 @@ const App = () => {
        <Header  />
        <div className='border border-[#839FEE] my-5'></div>
        <FilterBar taskCounts={taskCounts} />
+       <AddTaskModal/>
     </div>
   );
 };
