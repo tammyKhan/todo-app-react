@@ -2,15 +2,19 @@ import React from 'react';
 import { BiSolidEdit } from 'react-icons/bi';
 import { FaTrash } from 'react-icons/fa6';
 
-const TaskList = ({task, handleDelete, handleEdit}) => {
+const TaskList = ({task, handleDelete, handleEdit, handleToggleComplete}) => {
   return (
           <div className="flex bg-[#1F0356] p-3 rounded-3xl">
          
               <input type="checkbox"
+              checked={task.completed}
+              onChange={() => handleToggleComplete(task.id)}
               className="mx-4 mt-1 cursor-pointer h-5 w-5 border-2 border-[#839FEE] hover:border-opacity-65 rounded appearance-none bg-transparent checked:bg-[#94D09F]" />
             <div className="w-full">
           
-              <h3 className="text-base  font-bold text-white">{task.title}</h3>
+              <h3 className={`text-base  font-bold  ${
+                task.completed ? "line-through text-[#94D09F]" : "text-white" 
+              }`}>{task.title}</h3>
               <div className="flex justify-between w-full">
                <div className="flex flex-col md:flex-row gap-3 md:items-center mt-2 text-[#839FEE]">
                 <span className="text-sm">Added: <span className="createdAt"> {new Date(task.createdAt).toLocaleString()}</span></span>

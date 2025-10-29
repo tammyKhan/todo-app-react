@@ -30,7 +30,7 @@ const Header = () => {
 
          {/* Theme Toggle Button */}
      <div onClick={() => setDarkMode(!darkMode) }
-       className='w-16 h-8 rounded-full bg-blue-400  flex justify-center items-center  cursor-pointer  '>
+       className='w-16 h-8 rounded-full bg-blue-400 hover:bg-opacity-50  flex justify-center items-center  cursor-pointer  '>
         {/* sun icon */}
       <div className={`text-white  w-8 h-8 flex justify-center items-center  rounded-full transition-all duration-150 ${!darkMode ? 'bg-blue-800 border-2 border-blue-400' : 'bg-transparent' }`}>
          <IoSunny className='w-4 h-5'/>

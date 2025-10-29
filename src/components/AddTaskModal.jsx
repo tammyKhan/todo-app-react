@@ -55,6 +55,7 @@ const AddTaskModal = () => {
       priority: task.priority,
       dueDate: task.dueDate,
       createdAt: new Date().toISOString(),
+      completed: false
     };
 
     const updatedTasks = [...tasks, newTask];
@@ -87,6 +88,15 @@ const AddTaskModal = () => {
       setEditTaskId(id);
       setShowModal(true);
     }
+  }
+
+  // checked complete
+  const handleToggleComplete = (id) => {
+    const updatedTasks = tasks.map((t) => 
+    t.id === id ? {...t, completed: !t.completed} : t
+    );
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   }
 
   return (
@@ -173,7 +183,7 @@ const AddTaskModal = () => {
       {/* Task List */}
       <div className="mt-8 space-y-3">
         {tasks.length === 0 ? (
-          <p className="text-center">No Tasks Yet</p>
+          <p className="text-center">No tasks yet — add one!</p>
         ) : (
           tasks.map((t) => 
           <TaskList
@@ -181,6 +191,7 @@ const AddTaskModal = () => {
            task={t} 
            handleDelete={handleDelete}
            handleEdit={handleEdit}
+           handleToggleComplete={handleToggleComplete}
            />)
         )}
       </div>
