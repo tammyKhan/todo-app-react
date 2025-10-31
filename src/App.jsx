@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from './components/Header';
 import FilterBar from './components/FilterBar';
 import AddTaskModal from './components/AddTaskModal';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
   const [activeFilter, setActiveFilter] = useState("all");
@@ -30,6 +31,15 @@ const App = () => {
 
   return (
     <div className='py-3 w-11/12 mx-auto  relative '>
+          <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
        <Header  />
        <div className='border border-[#839FEE] my-5'></div>
        <FilterBar 

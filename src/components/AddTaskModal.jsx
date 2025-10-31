@@ -3,6 +3,9 @@ import { FaPlus } from "react-icons/fa6";
 import TaskList from "./TaskList";
 import SortedBtns from "./SortedBtns";
 import TaskActionsBar from "./TaskActionsBar";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 const AddTaskModal = ({ tasks, setTasks }) => {
   const [showModal, setShowModal] = useState(false);
@@ -18,24 +21,71 @@ const AddTaskModal = ({ tasks, setTasks }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
 
-  // select all toggle
+  // Select all Toggle
   const handleSelectAll = () => {
-    const updatedTasks = tasks.map((t) => ({
-      ...t, completed: !allSelected,
-    }))
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks))
-    setAllSelected(!allSelected);
-  }
+  const updatedTasks = tasks.map((t) => ({
+    ...t,
+    completed: !allSelected, 
+  }));
+
+  setTasks(updatedTasks);
+  localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+  // toggle state update
+  setAllSelected(!allSelected);
+
+  // SweetAlert2 
+  Swal.fire({
+    icon: "success",
+    title: !allSelected ? "All Selected!" : "All Unselected!",
+    text: !allSelected
+      ? "All tasks have been marked as completed."
+      : "All tasks have been unmarked.",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+};
+
 
   // clear complete
   const handleClearComplete = () => {
-    const updatedTasks = tasks.filter((t) => !t.completed);
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const hasCompleted = tasks.some(task => task.completed);
 
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks))
-    setAllSelected(false);
+  if (!hasCompleted) {
+    Swal.fire({
+      icon: "info",
+      title: "No completed tasks!",
+      text: "There are no completed tasks to clear.",
+      confirmButtonColor: "#3085d6",
+    });
+    return;
   }
+
+  Swal.fire({
+    title: "Are you sure?",
+    text: "You want to delete all completed tasks?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const updatedTasks = tasks.filter(task => !task.completed);
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+      setTasks(updatedTasks);
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "All completed tasks have been deleted.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  });
+};
 
   // handle input change
   const handleChange = (e) => {
@@ -48,7 +98,7 @@ const AddTaskModal = ({ tasks, setTasks }) => {
     e.preventDefault();
 
     if (!task.title.trim()) {
-      alert("Title cannot be empty or spaces only!");
+      toast.warn("Title cannot be empty or spaces only!");
       return;
     }
 
@@ -58,7 +108,7 @@ const AddTaskModal = ({ tasks, setTasks }) => {
     );
 
     if (isDuplicate) {
-      alert("A task with this title already exists!");
+      toast.error("A task with this title already exists!");
       return;
     }
 
@@ -68,7 +118,13 @@ const AddTaskModal = ({ tasks, setTasks }) => {
         t.id === editTaskId ? {...t, ...task, title: task.title.trim()} : t );
       setTasks(updatedTasks);
       localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-      alert("Task updated successfully!");
+       Swal.fire({
+      icon: "success",
+      title: "Updated",
+      text: "Task Updated SuccessFully",
+      showConfirmButton: false,
+      timer: 1500,
+  });
     } else {
       // create mode
     const newTask = {
@@ -83,7 +139,13 @@ const AddTaskModal = ({ tasks, setTasks }) => {
     const updatedTasks = [...tasks, newTask];
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    alert("Task Saved Successfully");
+       Swal.fire({
+      icon: "success",
+      title: "Saved",
+      text: "Task Saved SuccessFully",
+      showConfirmButton: false,
+      timer: 1500,
+  });
     }
 
     // reset
@@ -95,10 +157,30 @@ const AddTaskModal = ({ tasks, setTasks }) => {
 
   // delete functionality
   const handleDelete = (id) => {
-    console.log(id);
-    const updatedTasks = tasks.filter((t) => t.id !== id);
+  
+    Swal.fire({
+    title: "Are you sure?",
+    text: "You want to delete this tasks?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!",
+  }).then((result) => {
+    if (result.isConfirmed) {
+   const updatedTasks = tasks.filter((t) => t.id !== id);
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+      Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: "This tasks have been deleted.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  });
   };
 
   // edit functionality
