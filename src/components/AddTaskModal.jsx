@@ -12,6 +12,7 @@ const AddTaskModal = ({ tasks, setTasks }) => {
   });
 
   const [sortType, setSortType] = useState("created");
+  const [search, setSearch] = useState("")
   
   const [isEditing, setIsEditing] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
@@ -120,6 +121,11 @@ const AddTaskModal = ({ tasks, setTasks }) => {
     return 0;
   })
 
+  // search filter 
+  const searchedTasks = [...sortedTasks].filter((t) => 
+    t.title.toLowerCase().includes(search.toLowerCase().trim())
+  )
+
   return (
     <>
       {/* Add task btn */}
@@ -130,7 +136,18 @@ const AddTaskModal = ({ tasks, setTasks }) => {
       >
         <FaPlus className="text-white" />
       </div>
+
+      <div className="flex gap-2 justify-between sm:justify-center sm:gap-10 mt-11  items-center">
       <SortedBtns sortType={sortType} setSortType={setSortType} />
+       <div className="w-1/3">
+        <input type="text"
+        placeholder="search tasks here"
+        value={search} onChange={(e) => setSearch(e.target.value)}
+        className="bg-transparent w-full placeholder:text-[#839FEE] text-white border-2 p-1 px-2 focus:ring-2 focus:ring-white outline-none rounded-3xl border-[#839FEE]"
+        />
+       </div>
+      </div>
+
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -204,10 +221,10 @@ const AddTaskModal = ({ tasks, setTasks }) => {
 
       {/* Task List */}
       <div className="mt-8 space-y-3">
-        {sortedTasks.length === 0 ? (
-          <p className="text-center">No tasks yet — add one!</p>
+        {searchedTasks.length === 0 ? (
+          <p className="text-center text-white text-2xl mt-16">No tasks Found</p>
         ) : (
-          sortedTasks.map((t) => 
+          searchedTasks.map((t) => 
           <TaskList
            key={t.id} 
            task={t} 
