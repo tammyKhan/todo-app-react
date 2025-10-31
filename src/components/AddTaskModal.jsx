@@ -2,16 +2,14 @@ import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import TaskList from "./TaskList";
 
-const AddTaskModal = () => {
+const AddTaskModal = ({ tasks, setTasks }) => {
   const [showModal, setShowModal] = useState(false);
   const [task, setTask] = useState({
     title: "",
     priority: "High",
     dueDate: "",
   });
-  const [tasks, setTasks] = useState(() => {
-    return JSON.parse(localStorage.getItem("tasks")) || [];
-  });
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
 

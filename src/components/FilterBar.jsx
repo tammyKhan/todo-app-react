@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { filterItems } from '../data/filterData'
 import FilterButton from './FilterButton';
 
-const FilterBar = ({ taskCounts }) => {
-  const [activeFilter, setActiveFilter] = useState("all");
+const FilterBar = ({ activeFilter, setActiveFilter, taskCounts }) => {
+  
   return (
     <div className='grid grid-cols-3 gap-2  md:gap-6 '>
        {
