@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import TaskList from "./TaskList";
 import SortedBtns from "./SortedBtns";
+import TaskActionsBar from "./TaskActionsBar";
 
 const AddTaskModal = ({ tasks, setTasks }) => {
   const [showModal, setShowModal] = useState(false);
@@ -12,10 +13,29 @@ const AddTaskModal = ({ tasks, setTasks }) => {
   });
 
   const [sortType, setSortType] = useState("created");
-  const [search, setSearch] = useState("")
-  
+  const [search, setSearch] = useState("");
+  const [allSelected, setAllSelected] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
+
+  // select all toggle
+  const handleSelectAll = () => {
+    const updatedTasks = tasks.map((t) => ({
+      ...t, completed: !allSelected,
+    }))
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks))
+    setAllSelected(!allSelected);
+  }
+
+  // clear complete
+  const handleClearComplete = () => {
+    const updatedTasks = tasks.filter((t) => !t.completed);
+
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks))
+    setAllSelected(false);
+  }
 
   // handle input change
   const handleChange = (e) => {
@@ -127,7 +147,7 @@ const AddTaskModal = ({ tasks, setTasks }) => {
   )
 
   return (
-    <>
+    <div className="space-y-7">
       {/* Add task btn */}
       <div
         onClick={() => setShowModal(true)}
@@ -137,16 +157,25 @@ const AddTaskModal = ({ tasks, setTasks }) => {
         <FaPlus className="text-white" />
       </div>
 
-      <div className="flex gap-2 justify-between sm:justify-center sm:gap-10 mt-11  items-center">
+     {/* sorted buttons */}
+      <div className="flex gap-2 justify-between sm:justify-center sm:gap-10  items-center">
       <SortedBtns sortType={sortType} setSortType={setSortType} />
        <div className="w-1/3">
         <input type="text"
         placeholder="search tasks here"
         value={search} onChange={(e) => setSearch(e.target.value)}
-        className="bg-transparent w-full placeholder:text-[#839FEE] text-white border-2 p-1 px-2 focus:ring-2 focus:ring-white outline-none rounded-3xl border-[#839FEE]"
+        className="hidden md:block bg-transparent w-full placeholder:text-[#839FEE] text-white border-2 p-1 px-2 focus:ring-2 focus:ring-white outline-none rounded-3xl border-[#839FEE]"
         />
        </div>
       </div>
+
+      <TaskActionsBar  
+      allSelected={allSelected}
+      handleSelectAll={handleSelectAll}
+      handleClearComplete={handleClearComplete}
+      search={search}
+      setSearch={setSearch}
+      />
 
       {/* Modal */}
       {showModal && (
@@ -234,7 +263,7 @@ const AddTaskModal = ({ tasks, setTasks }) => {
            />)
         )}
       </div>
-    </>
+    </div>
   );
 };
 
