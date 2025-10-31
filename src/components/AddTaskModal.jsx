@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import TaskList from "./TaskList";
+import SortedBtns from "./SortedBtns";
 
 const AddTaskModal = ({ tasks, setTasks }) => {
   const [showModal, setShowModal] = useState(false);
@@ -9,6 +10,8 @@ const AddTaskModal = ({ tasks, setTasks }) => {
     priority: "High",
     dueDate: "",
   });
+
+  const [sortType, setSortType] = useState("created");
   
   const [isEditing, setIsEditing] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
@@ -97,6 +100,26 @@ const AddTaskModal = ({ tasks, setTasks }) => {
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   }
 
+  // sort logic
+  const sortedTasks = [...tasks].sort((a, b) => {
+    if(sortType === "created"){
+      return new Date(a.createdAt) - new Date(b.createdAt)
+    }
+    if(sortType === "priority"){
+      const order = { "High": 1, "Medium": 2, "Low": 3 }
+      return order[a.priority] - order[b.priority]
+    }
+    if(sortType === "dueDate"){
+      if(!a.dueDate) return 1;
+      if(!b.dueDate) return -1;
+      return new Date(a.dueDate) - new Date(b.dueDate);
+    }
+    if(sortType === "az"){
+      return a.title.localeCompare(b.title);
+    }
+    return 0;
+  })
+
   return (
     <>
       {/* Add task btn */}
@@ -107,6 +130,7 @@ const AddTaskModal = ({ tasks, setTasks }) => {
       >
         <FaPlus className="text-white" />
       </div>
+      <SortedBtns sortType={sortType} setSortType={setSortType} />
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -180,10 +204,10 @@ const AddTaskModal = ({ tasks, setTasks }) => {
 
       {/* Task List */}
       <div className="mt-8 space-y-3">
-        {tasks.length === 0 ? (
+        {sortedTasks.length === 0 ? (
           <p className="text-center">No tasks yet — add one!</p>
         ) : (
-          tasks.map((t) => 
+          sortedTasks.map((t) => 
           <TaskList
            key={t.id} 
            task={t} 
